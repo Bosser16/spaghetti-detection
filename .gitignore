@@ -66,6 +66,7 @@ datasets/
 dataset/
 images/
 videos/
+labels/
 *.zip
 *.tar.gz
 *.tgz
