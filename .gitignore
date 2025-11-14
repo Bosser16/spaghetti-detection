@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv / environments
+.env
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+pip-log.txt
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+*.ipynb
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-*
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
+tmp/
+temp/
+
+# Packaging / build
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# Caches
+.cache/
+pytest_cache/
+.tox/
+.mypy_cache/
+.python-version
+
+# MLflow / experiment tracking / dashboards
+.wandb/
+wandb/
+mlruns/
+tensorboard_logs/
+
+# Torch / CUDA build artifacts
+torch_extensions/
+cuda_build/
+*.so
+
+# Data, datasets, and large binaries (do not track large raw data)
+data/
+datasets/
+dataset/
+images/
+videos/
+*.zip
+*.tar.gz
+*.tgz
+
+# YOLO-specific outputs and models
+runs/
+detect/
+inference/
+weights/
+checkpoints/
+predictions/
+results*.txt
+*.pt
+*.weights
+*.onnx
+*.tflite
+*.pb
+*.engine
+*.bin
+
+# Annotation caches / generated labels (adjust if you track label files)
+labels/*.cache
+labels/*.pkl
+
+# Misc
+coverage/
+htmlcov/
+.idea/
+*.iml
