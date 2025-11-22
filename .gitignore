@@ -90,8 +90,8 @@ results*.txt
 # Annotation caches / generated labels (adjust if you track label files)
 labels/*.cache
 labels/*.pkl
-*.labels.cache
-*.labels.pkl
+*labels.cache
+*labels.pkl
 
 # Misc
 coverage/
