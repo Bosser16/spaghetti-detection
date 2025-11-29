@@ -18,3 +18,9 @@ After some manual placement of 'spaghetti' on my print bed
 the model was finally able to detect and error and send the shutdown command to the printer
 
 ![spaghetti](helpful_images/FoundSPAGHETTI.PNG)
+
+## Phase 2
+Time on this phase was spent on training the model. Results of this training aren't reflected in the code. I decided to find more datasets that were fitting to my model to have more data to train.
+
+### Code modifications
+The only changes to the source code for this phase are found in shutdown.py. I added LOG_MODE feature that helps me monitor the live performance of my model. This runs the shutdown code as normal, but instead logs the results by saving the raw image and annotated image for me to analyze. When in LOG_MODE the printer is prevented from sending the shutdown command to the printer so I can gather more information and images from a failed print. 
