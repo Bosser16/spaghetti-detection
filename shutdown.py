@@ -15,6 +15,11 @@ TEST_MODE = False
 if len(sys.argv) > 1 and sys.argv[1] == "-test":
     print("Running in TEST MODE")
     TEST_MODE = True
+    
+LOG_MODE = False
+if len(sys.argv) > 1 and sys.argv[1] == "-log":
+    print("Running in LOG MODE")
+    LOG_MODE = True
 
 # shutdown the print server
 def shutdown_server():
@@ -52,8 +57,9 @@ def get_capture(save_image=False):
     ret, frame = capture.read()
     capture.release()
     if save_image:
-        cv2.imwrite("captured_image.jpg", frame)
-        print("Image saved as captured_image.jpg")
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        cv2.imwrite(f"logs/captured_image_{timestamp}.jpg", frame)
+        print(f"Image saved as captured_image_{timestamp}.jpg")
     return frame
     
     
@@ -85,7 +91,7 @@ else:
             break
         
         # capture frame and run obj detection
-        frame = get_capture(save_image=False)
+        frame = get_capture(save_image=LOG_MODE)
         results = model(frame)
         
         # if any detections with confidence > 0.5, send shutdown command
@@ -93,9 +99,16 @@ else:
             boxes = result.boxes
             for box in boxes:
                 conf = box.conf[0]
-                if conf > 0.5:
-                    print(f"High confidence detection found: {conf}, sending shutdown command.")
-                    shutdown_server()
-                    exit(0)
+                if LOG_MODE:
+                    print(f"Detection confidence: {conf}")
+                else:
+                    if conf > 0.5:
+                        print(f"High confidence detection found: {conf}, sending shutdown command.")
+                        shutdown_server()
+                        exit(0)
+                        
+                annotated_frame = results[0].plot()
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                cv2.imwrite(f"logs/annotated_image_{timestamp}.jpg", annotated_frame)
                     
         time.sleep(5 * 60)  # wait for 5 minutes before next check
