@@ -4,6 +4,7 @@ import os
 import cv2
 import time
 import sys
+import ctypes
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +12,7 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 BASE_URL = "http://localhost:5000/api"
 
+# check for -test or -log flags
 TEST_MODE = False
 if len(sys.argv) > 1 and sys.argv[1] == "-test":
     print("Running in TEST MODE")
@@ -20,6 +22,11 @@ LOG_MODE = False
 if len(sys.argv) > 1 and sys.argv[1] == "-log":
     print("Running in LOG MODE")
     LOG_MODE = True
+    
+# prevent Windows from sleeping while script is running
+ES_CONTINUOUS = 0x80000000
+ES_SYSTEM_REQUIRED = 0x00000001
+ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
 
 # shutdown the print server
 def shutdown_server():
@@ -38,7 +45,8 @@ def shutdown_server():
 
 # Check server status    
 # idle = "Operational"
-# printing = 'Printing from SD' or "Printing"
+# printing = "Printing from SD" or "Printing"
+# returns JSON status
 def print_server_status():
     headers = {
         "Content-Type": "application/json",
@@ -52,19 +60,25 @@ def print_server_status():
     return response.json()
     
 # capture an image from the default camera
-def get_capture(save_image=False):
+# if save_image is True, save the image to logs/print_name/
+# print_name is used to create a folder for saving images
+# return the captured frame
+def get_capture(save_image=False, print_name="default"):
+    if save_image:
+        os.makedirs(f"logs/{print_name}", exist_ok=True)
     capture = cv2.VideoCapture(0)
     ret, frame = capture.read()
     capture.release()
     if save_image:
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        cv2.imwrite(f"logs/captured_image_{timestamp}.jpg", frame)
+        cv2.imwrite(f"logs/{print_name}/captured_image_{timestamp}.jpg", frame)
         print(f"Image saved as captured_image_{timestamp}.jpg")
     return frame
     
-    
+# load the trained model
 model = YOLO("best.pt")
 
+# if in test mode, just capture one frame and run detection
 if TEST_MODE:
     frame = get_capture(save_image=True)
     results = model(frame)
@@ -91,24 +105,29 @@ else:
             break
         
         # capture frame and run obj detection
-        frame = get_capture(save_image=LOG_MODE)
+        # if in log mode, save images
+        print_name = os.path.splitext(status['job']['file']['name'])[0]
+        frame = get_capture(save_image=LOG_MODE, print_name=print_name)
         results = model(frame)
         
-        # if any detections with confidence > 0.5, send shutdown command
+        # process detection results
         for result in results:
             boxes = result.boxes
             for box in boxes:
                 conf = box.conf[0]
+                # in log mode, just print confidences, prevent shutdown
                 if LOG_MODE:
                     print(f"Detection confidence: {conf}")
                 else:
+                    # if any detections with confidence > 0.5, send shutdown command
                     if conf > 0.5:
                         print(f"High confidence detection found: {conf}, sending shutdown command.")
                         shutdown_server()
                         exit(0)
-                        
+                
+                # save annotated image       
                 annotated_frame = results[0].plot()
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                cv2.imwrite(f"logs/annotated_image_{timestamp}.jpg", annotated_frame)
+                cv2.imwrite(f"logs/{print_name}/annotated_image_{timestamp}.jpg", annotated_frame)
                     
         time.sleep(5 * 60)  # wait for 5 minutes before next check
