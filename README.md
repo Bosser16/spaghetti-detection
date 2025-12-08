@@ -12,7 +12,7 @@ This jupyter notebook is a demonstration for this submission. This file will loo
 ## shutdown.py
 This is the main file for this project. It runs and model and is what communicates with my printer server. I was able to set up my printer to be able to talk to my computer on a locally hosted web server. I can check the status of the printer as well as send commands like cancel, pause, and resume. This file is also able to access my camera. I mounted my web cam to the side of the printer so I can periodically capture the printing process. There are three modes this file can run in, test mode and log mode with the -test and -log flag respectively. Normal mode is ran with no flags.
 #### NORMAL MODE
-In normal mode, ran with no flags, the code will capture an image every 5 minutes as long as the printer is currently in a printing state. Once captured, the image is processed by the model and the results are analyzed. If any spaghetti errors were detected above the decided confidence level, a shutdown command is sent to the print server to stop the print.
+In normal mode, run with no flags, the code will capture an image every 5 minutes as long as the printer is currently in a printing state. Once captured, the image is processed by the model and the results are analyzed. If any spaghetti errors were detected above the decided confidence level, a shutdown command is sent to the print server to stop the print.
 #### TEST MODE
 In test mode, only one image is captured and analyzed. The results are displayed in a pop up on screen. This mode is to test to make sure the model, camera, printer communication interface, and images are all working as intended.
 #### LOG MODE
